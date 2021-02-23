@@ -15,9 +15,12 @@ export class Home extends Component {
   };
 
   componentDidMount() {
-    this.setState({
-      user_id: this.props.session.activeUser._id,
-    });
+    const { session } = this.props;
+    if (session && session.activeUser) {
+      this.setState({
+        user_id: session.activeUser._id,
+      });
+    }
   }
   render() {
     const { session } = this.props;
@@ -46,7 +49,6 @@ export class Home extends Component {
         <div>
           <Query query={GET_SNAPS}>
             {({ data, loading, error }) => {
-              console.log(data);
               if (loading) return <div>Loading Snaps...</div>;
               return (
                 <div>
