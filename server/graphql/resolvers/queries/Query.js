@@ -15,7 +15,7 @@ const Query = {
     return await Snap.findById(args.id);
   },
   snaps: async (parent, args, { Snap }) => {
-    return Snap.find({}).sort({ createdAt: "desc" });
+    return Snap.find({}).sort({ createdAt: "DESC" });
   },
 };
 

@@ -4,6 +4,7 @@ import Header from "./Header";
 import Login from "./pages/Login";
 import Join from "./pages/Join";
 import SessionWrapperHOC from "./SessionWrapperHOC";
+import Profile from "./pages/Profile";
 import {
   BrowserRouter as Router,
   Switch,
@@ -16,7 +17,15 @@ const Ruut = ({ refetch, session }) => (
     <Fragment>
       <Header session={session} />
       <Switch>
-        <Route path="/" exact component={Home} />
+        <Route
+          path="/"
+          exact
+          render={() => <Home session={session} refetch={refetch} />}
+        />
+        <Route
+          path="/profile"
+          render={() => <Profile session={session} refetch={refetch} />}
+        />
         <Route path="/login" render={() => <Login refetch={refetch} />} />
         <Route path="/join" render={() => <Join refetch={refetch} />} />
         <Redirect to="/" />

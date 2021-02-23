@@ -1,45 +1,79 @@
 import React, { Component } from "react";
+import { Query } from "react-apollo";
+import { GET_SNAPS } from "../../queries";
+import TimeAgo from "react-timeago";
 
 export class Home extends Component {
+  state = {
+    text: "",
+    user_id: "",
+  };
+  setOnchange = (e) => {
+    this.setState({
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  componentDidMount() {
+    this.setState({
+      user_id: this.props.session.activeUser._id,
+    });
+  }
   render() {
+    const { session } = this.props;
     return (
       <div>
-        <div class="description">
-          <p class="sub_header__desc">
+        <div className="description">
+          <p className="sub_header__desc">
             simple snap app with <span>react</span>.
           </p>
         </div>
 
         <div>
           <form>
-            <input class="add-snap__input" type="text" placeholder="add snap" />
+            <input
+              className="add-snap__input"
+              onChange={(e) => this.setOnchange(e)}
+              name="text"
+              type="text"
+              placeholder={
+                session && session.activeUser ? "add snaps" : "login for snaps"
+              }
+              disabled={!(session && session.activeUser)}
+            />
           </form>
         </div>
         <div>
-          <ul class="snaps">
-            <li>
-              <div class="title">Lorem ipsum dolor sit amet</div>
-              <div class="date">
-                <span>now</span>
-              </div>
-            </li>
-            <li>
-              <div class="title">
-                Curabitur gravida arcu ac tortor dignissim.
-              </div>
-              <div class="date">
-                <span>5 minutes ago</span>
-              </div>
-            </li>
-            <li>
-              <div class="title">Tristique risus nec feugiat in fermentum.</div>
-              <div class="date">
-                <span>7 minutes ago</span>
-              </div>
-            </li>
-          </ul>
+          <Query query={GET_SNAPS}>
+            {({ data, loading, error }) => {
+              console.log(data);
+              if (loading) return <div>Loading Snaps...</div>;
+              return (
+                <div>
+                  <ul className="snaps">
+                    {data.snaps.map((snap) => (
+                      <li key={snap._id}>
+                        <div className="title">
+                          <span className="username">
+                            @{snap.user.username}{" "}
+                          </span>
+                          {snap.text}
+                        </div>
+
+                        <div className="date">
+                          <span>
+                            <TimeAgo date={snap.createdAt} />
+                          </span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="counter">{data.snaps.length} snap(s)</div>
+                </div>
+              );
+            }}
+          </Query>
         </div>
-        <div class="counter">3 snap(s)</div>
       </div>
     );
   }

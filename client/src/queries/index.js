@@ -19,7 +19,21 @@ export const SIGNIN_USER = gql`
 export const GET_ACTIVE_USER = gql`
   query {
     activeUser {
+      _id
       username
+    }
+  }
+`;
+
+export const GET_SNAPS = gql`
+  query {
+    snaps {
+      _id
+      text
+      createdAt
+      user {
+        username
+      }
     }
   }
 `;
