@@ -32,6 +32,21 @@ export const GET_SNAPS = gql`
       text
       createdAt
       user {
+        _id
+        username
+      }
+    }
+  }
+`;
+
+export const CREATE_SNAP = gql`
+  mutation($text: String!, $user_id: ID!) {
+    createSnap(data: { text: $text, user_id: $user_id }) {
+      _id
+      text
+      createdAt
+      user {
+        _id
         username
       }
     }

@@ -36,7 +36,7 @@ class Login extends Component {
         <Mutation mutation={SIGNIN_USER} variables={{ username, password }}>
           {(signIn, { loading, error }) => (
             <form
-              class="user-form"
+              className="user-form"
               onSubmit={async (e) => {
                 this.setOnsubmit(e, signIn);
               }}

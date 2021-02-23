@@ -49,7 +49,7 @@ class Join extends Component {
               onSubmit={(e) => {
                 this.setOnsubmit(e, createUser);
               }}
-              class="user-form"
+              className="user-form"
             >
               <label>
                 <input

@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Query } from "react-apollo";
+import { Query, Mutation } from "react-apollo";
 import { GET_SNAPS } from "../../queries";
 import TimeAgo from "react-timeago";
+import { CREATE_SNAP } from "./../../queries/index";
 
 export class Home extends Component {
   state = {
@@ -14,16 +15,46 @@ export class Home extends Component {
     });
   };
 
+  setOnsubmit = (e, createSnap) => {
+    e.preventDefault();
+    if (!this.ifFormValidate()) {
+      createSnap().then();
+      this.setState({
+        text: "",
+      });
+    }
+  };
+
+  ifFormValidate = () => {
+    const { text } = this.state;
+
+    return !text;
+  };
+  updateCache = (cache, { data: { createSnap } }) => {
+    const { snaps } = cache.readQuery({
+      query: GET_SNAPS,
+    });
+    cache.writeQuery({
+      query: GET_SNAPS,
+      data: {
+        snaps: [createSnap, ...snaps],
+      },
+    });
+  };
+
   componentDidMount() {
     const { session } = this.props;
+
     if (session && session.activeUser) {
       this.setState({
         user_id: session.activeUser._id,
       });
     }
   }
+
   render() {
     const { session } = this.props;
+    const { text, user_id } = this.state;
     return (
       <div>
         <div className="description">
@@ -33,18 +64,43 @@ export class Home extends Component {
         </div>
 
         <div>
-          <form>
-            <input
-              className="add-snap__input"
-              onChange={(e) => this.setOnchange(e)}
-              name="text"
-              type="text"
-              placeholder={
-                session && session.activeUser ? "add snaps" : "login for snaps"
-              }
-              disabled={!(session && session.activeUser)}
-            />
-          </form>
+          <Mutation
+            mutation={CREATE_SNAP}
+            update={this.updateCache}
+            variables={{ text, user_id }}
+            optimisticResponse={{
+              __typename: "Mutation",
+              createSnap: {
+                __typename: "Snap",
+                _id: Math.round(Math.random() * -200000),
+                text: this.state.text,
+                createdAt: new Date(),
+                user: {
+                  __typename: "User",
+                  ...session.activeUser,
+                },
+              },
+            }}
+            //refetchQueries={[{ query: GET_SNAPS }]}
+          >
+            {(createSnap, { loading, error }) => (
+              <form onSubmit={(e) => this.setOnsubmit(e, createSnap)}>
+                <input
+                  className="add-snap__input"
+                  onChange={(e) => this.setOnchange(e, createSnap)}
+                  name="text"
+                  type="text"
+                  value={text}
+                  placeholder={
+                    session && session.activeUser
+                      ? "add snaps"
+                      : "login for snaps"
+                  }
+                  disabled={!(session && session.activeUser)}
+                />
+              </form>
+            )}
+          </Mutation>
         </div>
         <div>
           <Query query={GET_SNAPS}>
@@ -54,7 +110,10 @@ export class Home extends Component {
                 <div>
                   <ul className="snaps">
                     {data.snaps.map((snap) => (
-                      <li key={snap._id}>
+                      <li
+                        key={snap._id}
+                        className={snap._id < 0 ? "optimistic" : ""}
+                      >
                         <div className="title">
                           <span className="username">
                             @{snap.user.username}{" "}
@@ -64,7 +123,11 @@ export class Home extends Component {
 
                         <div className="date">
                           <span>
-                            <TimeAgo date={snap.createdAt} />
+                            {snap._id < 0 ? (
+                              "sending..."
+                            ) : (
+                              <TimeAgo date={snap.createdAt} />
+                            )}
                           </span>
                         </div>
                       </li>

@@ -27,16 +27,13 @@ mongoose
   })
   .then(() => console.log("Mongo Db Çalıştı"))
   .catch((err) => console.log(err));
-
 const app = express();
-
 app.use(async (req, res, next) => {
   const token = req.headers["autorization"];
   if (token && token !== "null") {
     try {
       const activeUser = await jwt.verify(token, process.env.SECRET_KEY);
       req.activeUser = activeUser;
-      console.log(req);
     } catch (error) {
       console.log(error);
     }
