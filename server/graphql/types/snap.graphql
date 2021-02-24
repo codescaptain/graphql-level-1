@@ -19,3 +19,7 @@ input createSnapInput {
   text: String!
   user_id: ID!
 }
+
+type Subscription {
+  snapAdded(userId: ID): Snap
+}

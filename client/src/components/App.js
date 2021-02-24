@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import Home from "./pages/Home";
+import Home from "./pages/Home/Home";
 import Header from "./Header";
 import Login from "./pages/Login";
 import Join from "./pages/Join";
@@ -17,15 +17,8 @@ const Ruut = ({ refetch, session }) => (
     <Fragment>
       <Header session={session} />
       <Switch>
-        <Route
-          path="/"
-          exact
-          render={() => <Home session={session} refetch={refetch} />}
-        />
-        <Route
-          path="/profile"
-          render={() => <Profile session={session} refetch={refetch} />}
-        />
+        <Route path="/" exact render={() => <Home session={session} />} />
+        <Route path="/profile" render={() => <Profile session={session} />} />
         <Route path="/login" render={() => <Login refetch={refetch} />} />
         <Route path="/join" render={() => <Join refetch={refetch} />} />
         <Redirect to="/" />

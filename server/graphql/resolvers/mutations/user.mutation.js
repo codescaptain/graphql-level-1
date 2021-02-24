@@ -1,16 +1,24 @@
 const bcrypt = require("bcrypt");
 const Token = require("../../../helpers/Token");
 module.exports = {
-  createUser: async (parent, { data: { username, password } }, { User }) => {
+  createUser: async (
+    parent,
+    { data: { username, password } },
+    { User, pubsub }
+  ) => {
     const user = await User.findOne({ username });
 
     if (user) {
       throw new Error("User already exits");
     }
+
     const newUser = await new User({
       username,
       password,
     }).save();
+    pubsub.publish("user createad", {
+      user: newUser,
+    });
 
     return { token: Token.generate(newUser, "1h") };
   },

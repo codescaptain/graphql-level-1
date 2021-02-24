@@ -8,7 +8,7 @@ export const CREATE_USER = gql`
     }
   }
 `;
-
+//mutations
 export const SIGNIN_USER = gql`
   mutation($username: String!, $password: String!) {
     signIn(data: { username: $username, password: $password }) {
@@ -16,6 +16,7 @@ export const SIGNIN_USER = gql`
     }
   }
 `;
+//query
 export const GET_ACTIVE_USER = gql`
   query {
     activeUser {
@@ -24,7 +25,7 @@ export const GET_ACTIVE_USER = gql`
     }
   }
 `;
-
+//query
 export const GET_SNAPS = gql`
   query {
     snaps {
@@ -38,7 +39,7 @@ export const GET_SNAPS = gql`
     }
   }
 `;
-
+//mutations
 export const CREATE_SNAP = gql`
   mutation($text: String!, $user_id: ID!) {
     createSnap(data: { text: $text, user_id: $user_id }) {
@@ -49,6 +50,17 @@ export const CREATE_SNAP = gql`
         _id
         username
       }
+    }
+  }
+`;
+
+//subs
+
+export const CREATED_USER = gql`
+  subscription {
+    user {
+      _id
+      username
     }
   }
 `;
